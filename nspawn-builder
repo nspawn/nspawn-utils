@@ -23,7 +23,7 @@
 # Email: edu4rdshl@protonmail.com
 # Github: www.github.com/edu4rdshl
 
-VERSION="0.2"
+VERSION="0.3"
 STATIC_NAME="Nspawn Builder (https://nspawn.org)"
 
 # Mkosi
@@ -37,6 +37,8 @@ DISABLE_RAW=""
 
 # Create mkosi.cache/ directory if no exists, leave empty if you don't want it to be created
 CREATE_MKOSI_CACHE_DIR="yes"
+# Set the cache dir for mkosi to use. By default, it's /var/cache/mkosi.
+MKOSI_CACHE_BASE_DIR="/var/cache/mkosi"
 
 set -e
 
@@ -142,7 +144,10 @@ build_image() {
 
   # Create mkosi.cache/ dir if flag is set
   if [ ! -d "$mkosi_cache" ] && [[ -n $CREATE_MKOSI_CACHE_DIR ]]; then
-    mkdir "$mkosi_cache"
+    if [[ -n $MKOSI_CACHE_BASE_DIR ]]; then
+      mkosi_cache="$MKOSI_CACHE_BASE_DIR/$mkosi_cache"
+      fi
+    mkdir -p "$mkosi_cache"
   fi
 
   # Static options
@@ -184,8 +189,9 @@ build_image() {
   fi
 
   # Build each image
-  echo "Building mkosi images, it may take a while."
+  echo -e "\n\t Building mkosi images, it may take a while... \n"
   for image in "${MKOSI_IMAGE_TYPES[@]}"; do
+    echo -e "\n Running $MKOSI_CMD $image $MKOSI_ARGS \n"
     $MKOSI_CMD $image $MKOSI_ARGS
   done
 }
