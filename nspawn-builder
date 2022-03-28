@@ -150,6 +150,11 @@ build_image() {
     mkdir -p "$mkosi_cache"
   fi
 
+  # Workaround for Centos 7
+  if [ "$scripts_name" == "centos7" ]; then
+    MKOSI_ARGS+=" --without-unified-kernel-images"
+  fi
+
   # Static options
   if [ -d "$mkosi_extra" ]; then
     MKOSI_ARGS+=" --extra-tree=$mkosi_extra"
